@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# KORFU INVESTMENT
 
-## Getting Started
+Premium-editorial landing page for a real-estate agency selling investment apartments on Corfu, Greece.
 
-First, run the development server:
+Stack: **Next.js 16 (App Router, Turbopack) · TypeScript · Tailwind v4 · Motion · Sanity (embedded Studio) · Vercel**
+
+## Local development
 
 ```bash
+npm install
+cp .env.local.example .env.local   # fill in Sanity values
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open <http://localhost:3000> for the site and <http://localhost:3000/studio> for the embedded Sanity Studio.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Copy `.env.local.example` to `.env.local` and fill in:
 
-## Learn More
+| Variable | Required | Notes |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SANITY_PROJECT_ID` | yes (for Studio + CMS fetches) | From <https://www.sanity.io/manage> → your project → Project ID |
+| `NEXT_PUBLIC_SANITY_DATASET` | yes (defaults to `production` if missing) | Usually `production` |
+| `NEXT_PUBLIC_SANITY_API_VERSION` | optional | Defaults to `2024-10-01` |
+| `SANITY_API_READ_TOKEN` | optional | Required only for private datasets / draft mode |
 
-To learn more about Next.js, take a look at the following resources:
+> The build will succeed even with empty Sanity values — the home page does not need Sanity. The `/studio` route and any CMS content will fail at runtime until real values are provided.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploying to Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Import the GitHub repository** at <https://vercel.com/new> — Vercel auto-detects Next.js. Framework preset: *Next.js*. Build command and output directory: leave defaults.
+2. **Set environment variables** in *Project Settings → Environment Variables*. At minimum, add the variables from the table above (mark Sanity values as available for *Production*, *Preview*, and *Development* environments).
+3. **Deploy**. Vercel uses the `engines.node` constraint in `package.json` (Node ≥ 20).
+4. **Sanity Studio CORS** — after the first successful deploy, open <https://www.sanity.io/manage> → your project → *API → CORS origins* and add:
+   - `https://<your-vercel-project>.vercel.app`
+   - any custom production domain you assign
+   - `http://localhost:3000` (for local Studio)
+5. **Custom domain (optional)** — Project Settings → Domains. Re-add the production domain to Sanity CORS after attaching it.
 
-## Deploy on Vercel
+### Region
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Vercel auto-picks the deploy region. To pin to Frankfurt (closer for Greek/Polish users), edit project settings or add `regions: ["fra1"]` in `vercel.json` if needed.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project layout
+
+```
+src/
+├── app/                        # App Router entry points
+│   ├── layout.tsx              # root layout (Geist, RootCursor, metadata)
+│   ├── page.tsx                # homepage → Hero + ComingSoon
+│   ├── globals.css             # Tailwind v4 import + palette tokens
+│   └── studio/[[...tool]]/     # embedded Sanity Studio
+├── components/
+│   ├── hero/                   # editorial hero (TopBar, HeroVideo, MaskedWord, MagneticCTA, …)
+│   ├── sections/ComingSoon.tsx # placeholder #oferta section
+│   └── ui/                     # NavLink, RootCursor (custom cursor)
+├── lib/
+│   ├── i18n.ts                 # server-safe dictionary (PL + EN)
+│   ├── use-locale.ts           # client hook (useSyncExternalStore + localStorage)
+│   └── client-stores.ts        # shared minute ticker + hover-media subscription
+└── sanity/                     # client + Studio config (env, schemas, structure)
+public/
+├── images/hero-poster.jpg      # placeholder poster (replace with real shot of Corfu)
+└── video/hero.mp4              # ⚠️ add a drone clip (e.g. Pexels free) — 1080p, < 8 MB
+```
+
+## Hero design highlights
+
+- Live Corfu time + weather pill (Open-Meteo, no API key)
+- Geographic coordinates badge — `39°37′N 19°50′E`
+- Word-clip mask on the “Korfu / Corfu” headline word
+- Magnetic CTA with spring-following pointer offset
+- Mix-blend custom cursor (8 px dot → “→” pill on link hover)
+- Word-by-word `clip-path` reveal on the H1
+- Subtle video parallax + scale, all gated by `prefers-reduced-motion`
+- Bilingual PL/EN toggle with `localStorage` persistence
+
+## Scripts
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Dev server at <http://localhost:3000> |
+| `npm run build` | Production build (Turbopack) |
+| `npm run start` | Serve the production build locally |
+| `npm run lint` | ESLint (Next.js config) |
