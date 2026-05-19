@@ -3,7 +3,6 @@
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { useLocale, hydrateLocaleFromStorage } from "@/lib/use-locale";
-import { TopBar } from "./TopBar";
 import { HeroVideo } from "./HeroVideo";
 import { MaskedWord } from "./MaskedWord";
 import { MagneticCTA } from "./MagneticCTA";
@@ -28,10 +27,9 @@ export function Hero() {
   return (
     <section
       ref={heroRef}
-      className="relative isolate flex flex-col min-h-[100dvh] h-[100dvh] w-full overflow-hidden text-white"
+      className="relative isolate flex flex-col min-h-[100dvh] -mt-16 pt-16 w-full overflow-hidden text-white"
     >
       <HeroVideo containerRef={heroRef} />
-      <TopBar />
 
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6">
         <motion.div

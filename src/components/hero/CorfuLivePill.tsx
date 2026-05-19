@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { cn } from "@/lib/utils";
 import { useLocale } from "@/lib/use-locale";
 import {
   getMinuteSnapshot,
@@ -34,7 +35,11 @@ function formatAthensTime(date: Date) {
   }).format(date);
 }
 
-export function CorfuLivePill() {
+type CorfuLivePillProps = {
+  tone?: "light" | "dark";
+};
+
+export function CorfuLivePill({ tone = "dark" }: CorfuLivePillProps) {
   const { t } = useLocale();
   const reduced = useReducedMotion();
   const minute = useSyncExternalStore(
@@ -75,15 +80,21 @@ export function CorfuLivePill() {
       ? "—— : ——"
       : formatAthensTime(new Date(minute * 60_000));
 
+  const textClass = tone === "light" ? "text-muted-foreground" : "text-white/70";
+  const dotSeparator = tone === "light" ? "text-cobalt" : "text-cobalt";
+
   return (
     <div
-      className="flex items-center gap-3 text-[10px] tracking-[0.3em] uppercase text-white/70"
+      className={cn(
+        "flex items-center gap-3 text-[10px] tracking-[0.3em] uppercase",
+        textClass,
+      )}
       aria-label="Live local conditions on Corfu"
     >
       <span className="tabular-nums">{timeText} EET</span>
       {temperature !== null && (
         <>
-          <span aria-hidden className="text-cobalt">·</span>
+          <span aria-hidden className={dotSeparator}>·</span>
           <span className="inline-flex items-center gap-1.5 tabular-nums">
             <motion.span
               aria-hidden
@@ -93,7 +104,7 @@ export function CorfuLivePill() {
             />
             {temperature}°C
           </span>
-          <span aria-hidden className="text-cobalt">·</span>
+          <span aria-hidden className={dotSeparator}>·</span>
           <span>{t.weather[weather]}</span>
         </>
       )}
