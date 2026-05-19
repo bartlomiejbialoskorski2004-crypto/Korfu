@@ -184,15 +184,6 @@ export function Header() {
           "bg-background/95 supports-[backdrop-filter]:bg-background/70 border-border backdrop-blur-lg",
       )}
     >
-      {!scrolled && (
-        <div className="hidden md:flex h-7 items-center justify-between px-6 md:px-10 border-b border-white/15">
-          <CorfuLivePill />
-          <div className="text-[10px] tracking-[0.35em] uppercase text-white/55 tabular-nums">
-            39°37′N · 19°50′E
-          </div>
-        </div>
-      )}
-
       <nav
         className={cn(
           "mx-auto flex h-16 w-full items-center justify-between px-6 md:px-10",
